@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TETRIS</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction :column;
+            align-items: center;
+            background-color: #2c3e50;
+            color: aqua;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #3498db;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            transition: color 0.3s;
+        }
+        h1:hover {
+            color: #2ecc71;
+        }
+
+        #gameBoard {
+            border: 2px solid #52797c;
+            background-color: #2c3e50;
+            box-shadow: 0 0 30px rgba(50, 150, 220, 0.5);
+            transition: transform 0.5s;
+        }
+        #gameBoard:hover {
+            box-shadow: 0 0 30px rgba(50, 150, 220, 0.5);
+        }
+
+        #score {
+            margin-top: 20px;
+            font-size: 24px;
+            color: #69afdf;
+            padding: 10px 20px;
+            background-color: rgba(2, 2, 2, 0.3);
+            border-radius: 10px;
+            transition: transform 0.4s;
+        }
+        #score:hover {
+            transform: scale(1.1);
+        }
+
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            flex-direction: row;
+            align-items: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 17px;
+            border-radius: 15px;
+            background-color: rgba(35, 67, 226, 0.533);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        button:hover {
+            background-color: #2ecc71;
+            transform: translateY(3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        button:active {
+            transform: translateY(10px);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .gameInfo {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 10%;
+            text-align: center;
+        }
+        .gameInfo h2 {
+            color: #2ecc71;
+            margin: 10px;
+        }
+
+        .keyControls {
+            display: grid;
+            grid-template-columns: auto auto;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .key {
+            padding: 5px 10px;
+            background-color: rgba(50, 150, 220, 0.2);
+            border-radius: 10px;
+            font-family: monospace;
+            transition: background-color 0.3s;
+        }
+        .key:hover {
+            background-color: rgba(52, 152, 219, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <h1>Tetris</h1>
+
+    <canvas id="gameBoard" width="240" height="400"></canvas>
+
+    <div id="score">Score: 0</div>
+
+    <div class="controls">
+        <button id="start">Start Game</button>
+        <button id="pause">Pause</button>
+    </div>
+
+    <div class="gameInfo">
+        <h2>Controls</h2>
+        <div id="keyControls">
+            <div class="key">← →</div>
+            <div>Move Left/right</div>
+            <div class="key">↑</div>
+            <div>Rotate</div>s
+            <div class="key">↓</div>
+            <div>Drop</div>
+        </div>
+    </div>
+
+    <script>
+        //Game constants and variables
+        const canvas = document.getElementById('gameBoard');
+        const ctx = canvas.getContext('2d');
+        const blockSize = 20;
+        const boardWidth = 12;
+        const boardHeight = 20;
+
+        let board = Array(boardHeight).fill().map(() => Array(boardWidth).fill(0));
+        let score = 0;
+        let isGameOver = false;
+        let gameLoop;
+        let currentPiece = null;
+
+        //I define the tetris pieces...
+        const shapes = [
+            [[1,1,1,1]], //I piece
+            [[1,1], [1,1]], //O piece
+            [[1,1,1], [0,1,0]], //T piece
+            [[1,1,1], [1,0,0]], //L piece
+            [[1,1,1], [0,0,1]], //J piece
+            [[1,1,0], [0,1,1]],//S piece
+            [[0,1,1], [1,1,0]]//Z piece
+        ];
+
+        const colors = [
+            '#3498db', // I - Blue
+            '#f1c40f', // O - Yellow
+            '#9b59b6', // T - Purple
+            '#e67e22', // L - Orange
+            '#2980b9', // J - Dark Blue
+            '#2ecc71', // S - Green
+            '#e74c3c'  // Z - Red
+        ];
+
+        class Piece {
+            constructor(shape = null, color = null) {
+                this.shape = shape || shapes [Math.floor(Math.random() * shapes.length)];
+                this.color = color || colors[Math.floor(Math.random() * colors.length)];
+
+                this.x = Math.floor((boardWidth - this.shape[0].length) / 2);
+                this.y = 0;
+            }
+            //I check if piece can move to a new position
+            canMove(shape = this.shape, x = this.x, y = this.y){
+                return shape.every((row, dy) =>
+                    row.every((value, dx) =>
+                    value === 0 || (x + dx >= 0 && x + dx < boardWidth && y + dy < boardHeight
+                    (board[y + dy] === undefined || board[y + dy][x + dx] === 0))
+                    )
+                );
+            }
+
+            moveDown() {
+                if(this.canMove(this.shape, this.x, this.y + 1)) {
+                    this.y++;
+                    return true;
+                }
+                return false;
+            }
+            moveLeft(){
+                if(this.canMove(this.shape, this.x - 1, this.y)){
+                    this.x--;
+                }
+            }
+            moveRight(){
+                if(this.canMove(this.shape, this.x + 1, this.y)){
+                    this.x++;
+                }
+            }
+            rotate(){
+                const rotated = this.shape[0].map((_, i) =>
+                    this.shape.map(row => row[i]).reverse()
+                );
+                if(this.canMove(rotated, this.x, this.y)) {
+                    this.shape = rotated;
+                }
+            }
+
+            //Drawing functions
+            function drawBlock(x, y, color) {
+                ctx.fillStyle = color;
+                ctx.fillRect(x * blockSize, y * blockSize, blockSize, blockSize);
+                //Ad border to each block
+                ctx.strokeStyle = '#2c3e50';
+                ctx.strokeRect(x * blockSize, y * blockSize, blockSize, blockSize);
+            }
+
+            //Function to draw current piece
+            function drawPiece(piece) {
+                piece.shape.forEach((row, dy) => {
+                    row.forEach((value, dx) => {
+                        if(value) {
+                            drawBlock(piece.x + dx, piece.y + dy, piece.color);
+                        }
+                    });
+                });
+            }
+
+            //Function to draw the entire board
+            function drawBoard() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                board.forEach((row, y) => {
+                    row.forEach((value, x) => {
+                        if(value) {
+                            drawBlock(x, y, value);
+                        }
+                    });
+                });
+
+                if(currentPiece) {
+                    drawPiece(currentPiece);
+                }
+            }
+        }
+    </script>
+</body>
+</html>♦
