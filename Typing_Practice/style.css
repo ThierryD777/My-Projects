@@ -1,0 +1,17 @@
+h1 {
+    text-align: center;
+}
+
+body {
+    background-color: rgb(184, 233, 233);
+    text-align: center;
+}
+
+.highlight {
+	background-color: yellow;
+}
+
+.error {
+	background-color: lightcoral;
+	border-color: red;
+}
