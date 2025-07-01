@@ -1,0 +1,80 @@
+.header{
+    background-color: rgb(31, 31, 31);
+    display: flex;
+    justify-content: space-between;
+    height: 60px;
+    align-items: center;
+
+    & a{
+        background-color: greenyellow;
+        padding: 1%;
+        font-style: 20px;
+        text-decoration: none;
+        font-weight: bold;
+        border-radius: 10%;
+        margin-left: 3%;
+    }
+
+    & button{
+        background-color: aqua;
+        padding: 1%;
+        border-radius: 10%;
+        margin-right: 3%;
+    }
+    
+    
+}
+
+body{
+    padding: 0%;
+    margin: 0%;
+}
+
+*{
+    padding: 0%;
+    margin: 0%;
+}
+
+.backgroundImage{
+    background-image: url("pngtree-my-resume-background-material-picture-image_1117680.jpg");
+}
+
+projekt {
+    
+}
+
+footer{
+    text-align: center;
+    padding: "20px";
+    background-color: rgb(233, 229, 229);
+    min-height: 10vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 60px;
+    
+}
+/*frontHeader{
+    & p{
+        height: 10%;
+    }
+}*/
+
+/*.bewerbung{
+    font-size: 700;
+    font-weight: 15%;
+    color: yellow;
+}*/
+
+.buttons{
+    & a{
+        background-color: black;
+        padding: 1%;
+        margin-left: 3%;
+        border-radius: 10%;
+        text-decoration: none;
+        color: azure;
+        font-weight: bold;
+    }
+}
+
