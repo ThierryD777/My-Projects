@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Calculator Web App
 
 A simple, stylish calculator built with HTML, CSS, and JavaScript.
@@ -72,3 +73,6 @@ This project is open source and available under the [MIT License](LICENSE).
 ## Author
 
 - Thierry Florent DZOUATO DJEUMEN
+=======
+
+>>>>>>> dca0bb232dcb5a16b1417a07c044f9f9024b7d77
